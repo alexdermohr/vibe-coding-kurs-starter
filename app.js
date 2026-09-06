@@ -3,7 +3,8 @@ export const activities = [
   "🏓 Tischtennis",
   "🚶 Eine Runde gehen",
   "💬 Quatschen",
-  "🎨 Etwas zeichnen"
+  "🎨 Etwas zeichnen",
+  "🧩 Mini-Rätsel"
 ];
 
 export function pickRandom(items, random = Math.random) {
