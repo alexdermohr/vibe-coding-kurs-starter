@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, realpathSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -93,9 +94,10 @@ function currentBranch(workspace) {
 
 function prepare() {
   const student = normalizeStudent(readOption("--student"));
-  const stamp = timestamp();
-  const branch = `relay/${student}-${stamp.toLowerCase()}`;
-  const workspace = join(workspaceRoot, `${student}-${stamp.toLowerCase()}`);
+  const stamp = timestamp().toLowerCase();
+  const nonce = randomBytes(3).toString("hex");
+  const branch = `relay/${student}-${stamp}-${nonce}`;
+  const workspace = join(workspaceRoot, `${student}-${stamp}-${nonce}`);
   mkdirSync(workspaceRoot, { recursive: true });
 
   run("git", ["fetch", "--no-tags", "origin", "main"], { cwd: repoRoot });
@@ -141,6 +143,10 @@ function submit() {
     allowFailure: true,
   });
   if (staged.status === 0) fail("Nach git add ist keine Änderung übrig.");
+  if (staged.status !== 1) {
+    const detail = (staged.stderr || staged.stdout || "").trim();
+    fail(`Staging-Diff konnte nicht geprüft werden${detail ? `: ${detail}` : ""}`);
+  }
   run(
     "git",
     [
@@ -187,6 +193,9 @@ function submit() {
     { cwd: workspace, capture: true }
   );
   const prUrl = prResult.stdout.trim().split(/\s+/).at(-1);
+  if (!/^https:\/\/github\.com\/alexdermohr\/vibe-coding-kurs-starter\/pull\/\d+$/.test(prUrl || "")) {
+    fail("GitHub hat keine erwartete Pull-Request-URL zurückgegeben.");
+  }
 
   mkdirSync(receiptRoot, { recursive: true });
   const receipt = {
