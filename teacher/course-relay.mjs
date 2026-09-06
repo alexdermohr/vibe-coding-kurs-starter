@@ -100,8 +100,11 @@ function prepare() {
   const workspace = join(workspaceRoot, `${student}-${stamp}-${nonce}`);
   mkdirSync(workspaceRoot, { recursive: true });
 
-  run("git", ["fetch", "--no-tags", "origin", "main"], { cwd: repoRoot });
-  run("git", ["worktree", "add", "-b", branch, workspace, "origin/main"], { cwd: repoRoot });
+  run("git", ["fetch", "--no-tags", "origin", "main"], { cwd: repoRoot, capture: true });
+  run("git", ["worktree", "add", "-b", branch, workspace, "origin/main"], {
+    cwd: repoRoot,
+    capture: true,
+  });
 
   console.log(JSON.stringify({ student, branch, workspace }, null, 2));
 }
