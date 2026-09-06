@@ -217,12 +217,13 @@ function submit() {
 
 function cleanup() {
   const workspace = validateWorkspace(readOption("--workspace"));
-  currentBranch(workspace);
+  const branch = currentBranch(workspace);
   if (output("git", ["status", "--porcelain"], workspace)) {
     fail("Workspace ist nicht sauber; Cleanup wird verweigert.");
   }
   run("git", ["worktree", "remove", workspace], { cwd: repoRoot });
-  console.log(`Lokaler Worktree entfernt: ${workspace}`);
+  run("git", ["branch", "-D", branch], { cwd: repoRoot });
+  console.log(`Lokaler Worktree und Branch entfernt: ${workspace} (${branch})`);
 }
 
 const command = process.argv[2];
