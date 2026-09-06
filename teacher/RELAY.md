@@ -1,10 +1,10 @@
 # Kurs-Relay für Schüler ohne GitHub-Konto
 
-Dieser Pilot hält GitHub als Lernziel sichtbar, ohne dem Schüler GitHub-Zugangsdaten zu geben.
+Dieser Pilot hält Git und GitHub als Lernziel sichtbar, ohne dem Schüler GitHub-Zugangsdaten zu geben.
 
 ## Rollen
 
-- **Schüler:** wählt ein Pseudonym, verändert eine Datei, sieht den Diff und formuliert die Commit-Nachricht.
+- **Schüler:** wählt ein Pseudonym, verändert eine Datei, sieht den lokalen Diff und formuliert die Commit-Nachricht.
 - **Lehrer-Relay:** hält allein die GitHub-/SSH-Berechtigung und führt `submit` aus.
 - **GitHub:** enthält für jede Einreichung einen eigenen `relay/...`-Branch und einen normalen Pull Request.
 
@@ -28,11 +28,13 @@ node teacher/course-relay.mjs submit \
   --workspace <ausgegebenes-workspace> \
   --message "Neue Pausen-Idee hinzufügen"
 
-# 5. Nach Review/Merge den lokalen Worktree entfernen
+# 5. Review und Merge in der vom Lehrer bedienten GitHub-Ansicht besprechen.
+
+# 6. Danach den lokalen Worktree und Branch entfernen.
 node teacher/course-relay.mjs cleanup --workspace <ausgegebenes-workspace>
 ```
 
-## Sicherheitsgrenzen
+## Sicherheits- und Plattformgrenzen
 
 - `prepare` erzeugt pro Einreichung einen eindeutigen Branch unter `relay/`.
 - `submit` verweigert `main`, detached HEADs und Branches außerhalb von `relay/`.
@@ -41,6 +43,9 @@ node teacher/course-relay.mjs cleanup --workspace <ausgegebenes-workspace>
 - Prozessaufrufe verwenden Argumentlisten statt Shell-Strings.
 - Der Relay speichert einen lokalen JSON-Receipt unter `~/.local/share/vibe-coding-kurs-relay/receipts/`.
 - GitHub-Credentials werden nicht als Argument, Datei im Projekt oder Schülergeheimnis übergeben; der Relay nutzt die bereits autorisierte Lehrerumgebung.
+- Schüler unter 13 bedienen oder besuchen `github.com` nicht selbst. Nach den aktuellen GitHub-Nutzungsbedingungen gilt die Mindestaltergrenze auch für Besucher der Website, nicht nur für persönliche Accounts.
+- Für unter 13 zeigt der Lehrer den echten GitHub-PR über seine eigene autorisierte Ansicht, zum Beispiel am Beamer. Der Schüler bedient weiterhin Änderung, Diff und Commit-Nachricht im lokalen Kursarbeitsplatz.
+- Wenn Schüler unter 13 eine PR-Oberfläche selbst anklicken sollen, braucht der Kurs dafür eine eigene Forge wie Forgejo; GitHub bleibt dann Lehrer-/Mirror-Ziel.
 
 ## Was der Schüler dabei lernt
 
@@ -54,4 +59,4 @@ node teacher/course-relay.mjs cleanup --workspace <ausgegebenes-workspace>
 
 ## Bewusste Grenze des Piloten
 
-Der Schüler bedient die GitHub-Schreiboberfläche nicht selbst. Das ist Absicht: die persönliche GitHub-Identität wird durch den kontrollierten Lehrer-Relay ersetzt. Der resultierende öffentliche Pull Request bleibt für den Schüler im Browser sichtbar und besprechbar.
+Der Schüler unter 13 bedient GitHub nicht selbst. Das ist Absicht: die GitHub-Nutzung übernimmt die kontrollierte Lehreridentität. Der echte GitHub-Branch und Pull Request bleiben als Lernobjekt erhalten und werden in der Lehreransicht gemeinsam besprochen. Für eine eigene klickbare Forge-Erfahrung der Schüler ist Forgejo der passende nächste Ausbaupfad.
